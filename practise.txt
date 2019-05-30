@@ -1,0 +1,42 @@
+1.
+#!/bin/sh
+cat /tmp/Testing/discon_portin.txt | tr -s "[\015]" "\n" | while read LINE
+do 
+  echo "853$LINE;" >> discon_portin_`date +%Y%m%d`.txt
+done
+
+
+2.
+
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' /tmp/Testing/discon_portin.txt > test2tmp.txt 
+while read LINE
+do
+  action=` echo $LINE | awk '{print $2}'`
+  if [ $action != 1 ]; then
+    echo $LINE | awk '{print $1"--"$2}' >> dup_discon_portin_`date +%Y%m%d`.txt
+  fi
+done < test2tmp.txt
+
+
+3.
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' discon_portin_`date +%Y%m%d`.txt | tr -s "[;]" "[\011]" >discon_summary_`date +%Y%m%d`.txt
+
+
+#!/bin/sh
+cat /tmp/Testing/discon_portin.txt | tr -s "[\015]" "\n" | while read LINE
+do 
+  if [ `awk '{print length($0)}'` =  8 ]; then
+    echo $LINE >> 2.txt
+  elif [ $LINE = "" ]
+    echo "kong" >> 1.txt
+  else 
+    echo "error"
+done
+
+
+
+
+
+
+echo "853$LINE;" >> discon_portin_`date +%Y%m%d`.txt
+
