@@ -1,0 +1,64 @@
+#!/bin/sh
+COUNTER=0
+cat /tmp/Testing/discon_portin.txt | tr -s "[\015]" "\n" | tr -s "[\012]" | while read LINE
+do
+  COUNTER=`expr $COUNTER + 1`
+  if [[ $LINE =~ (.*)\; ]]
+  then
+    echo "$LINE" | tr -s "\;" "\n">> temp.txt
+    if [ $? = 0 ]; then
+      echo "`basename $0`:line $COUNTER  remove the end of the data line(;) symbol on `date '+%Y-%m-%d %H:%M:%S'`" >> LinuxTest.log
+    else
+      exit 1
+    fi
+  elif [[ $LINE =~ ^853 ]]
+  then
+    echo "$LINE" | tr -s "853" "" >> temp.txt
+  elif echo $LINE | grep " " > /dev/null 2>&1
+    then
+    if [ $? = 0 ]; then
+      echo $LINE | sed 's/[[:space:]]//g' >> temp.txt
+    fi
+  else
+    echo "$LINE" >> temp.txt
+  fi
+done
+cat temp.txt | tr -s "[\015]" "\n" | tr -s "[\012]" | while read LINE
+do
+  echo "853$LINE;" >> discon_portin_`date +%Y%m%d`.txt
+done
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' temp.txt > x2temp.txt
+while read LINE
+do
+  action=` echo $LINE | awk '{print $2}'`
+  if [ $action != 1 ]; then
+    echo $LINE | awk '{print $1"--"$2}' >> dup_discon_portin_`date +%Y%m%d`.txt
+  fi
+done < x2temp.txt
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' discon_portin_`date +%Y%m%d`.txt | tr -s "[;]" "[\011]" >discon_summary_`date +%Y%m%d`.txt
+
+
+
+
+
+
+
+      echo "`basename$0:`line $COUNTER  delete the beginning of the duplicate(853) data on `date '+%Y-%m-%d %H:%M:%S'`" >> LinuxTest.log
+
+        echo "`basename$0:`line $COUNTER remove extra spaces data on `date '+%Y-%m-%d %H:%M:%S'`" >> LinuxTest.log
+
+      echo "`basename$0:`line $COUNTER correct format on `date '+%Y-%m-%d %H:%M:%S'`" >> LinuxTest.log
+
+
+
+
+
+
+
+
+
+
+
+
+
+

@@ -1,0 +1,85 @@
+
+
+
+
+#!/bin/sh
+cat /tmp/Testing/discon_portin.txt | tr -s "[\015]" "\n" | tr -s "[\012]" | while read LINE
+do
+  if [[ $LINE =~ (.*)\; ]]
+  then
+    echo "853$LINE" >> 2.txt
+  elif [[ $LINE =~ ^853 ]]
+  then
+    echo "$LINE;" >> discon_portin_`date +%Y%m%d`.txt.txt
+  elif echo $LINE | grep " " > /dev/null 2>&1
+    then
+    if [ $? = 0 ]; then
+      echo $LINE | sed 's/[[:space:]]//g' | echo "853$LINE;" >> 2.txt
+    fi
+  else
+    echo "853$LINE;" >> 2.txt
+  fi
+done
+
+
+temp.txt
+#!/bin/sh
+cat /tmp/Testing/discon_portin.txt | tr -s "[\015]" "\n" | tr -s "[\012]" | while read LINE
+do
+  if [[ $LINE =~ (.*)\; ]] 
+  then
+    echo "$LINE" | tr -s "\;" "\n">> temp.txt 
+  elif [[ $LINE =~ ^853 ]]
+  then
+    echo "$LINE" | tr -s "853" "" >> temp.txt
+  elif echo $LINE | grep " " > /dev/null 2>&1
+    then
+    if [ $? = 0 ]; then
+      echo $LINE | sed 's/[[:space:]]//g' >> temp.txt
+    fi
+  else
+    echo "$LINE" >> temp.txt
+  fi
+done
+
+1.
+#!/bin/sh
+cat temp.txt | tr -s "[\015]" "\n" | tr -s "[\012]" | while read LINE
+do 
+  echo "853$LINE;" >> discon_portin_`date +%Y%m%d`.txt
+done
+
+2.
+#!/bin/sh
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' temp.txt > x2temp.txt 
+while read LINE
+do
+  action=` echo $LINE | awk '{print $2}'`
+  if [ $action != 1 ]; then
+    echo $LINE | awk '{print $1"--"$2}' >> dup_discon_portin_`date +%Y%m%d`.txt
+  fi
+done < x2temp.txt
+
+3.
+#!/bin/sh
+awk '{a[$1]++}END{for(i in a)print i,a[i]}' discon_portin_`date +%Y%m%d`.txt | tr -s "[;]" "[\011]" >discon_summary_`date +%Y%m%d`.txt
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
